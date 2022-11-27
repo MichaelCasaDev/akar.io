@@ -8,6 +8,7 @@ public class Player implements Serializable {
   private Pos pos;
   private int mass = 30;
   private String username;
+  private boolean isDead;
 
   public Player(Pos pos, String username) {
     this.pos = pos;
@@ -40,6 +41,14 @@ public class Player implements Serializable {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public boolean isDead() {
+    return isDead;
+  }
+
+  public void setDead(boolean isDead) {
+    this.isDead = isDead;
   }
 
 }

@@ -48,38 +48,48 @@ public class Connection extends Thread {
             case MOVE: {
               switch (Main.gManager.checkCollision(packet.getPlayer())) {
                 case 0: { // player
-                  // check if other player is bigger or you
                   Player otherPlayer = Main.gManager.getOtherPlayerCollision(packet.getPlayer());
+
+                  // check if other player is bigger or you
                   if (!(otherPlayer instanceof Player)) {
                     System.out.println("Error other player is not a player");
                     break;
                   }
 
+                  // Other player is bigger
                   if (otherPlayer.getMass() > packet.getPlayer().getMass()) {
                     Main.gManager.kill(packet.getPlayer());
                     otherPlayer.eatFood(packet.getPlayer().getMass() / 10);
+
+                    // You are bigger
                   } else {
                     Main.gManager.kill(otherPlayer);
                     packet.getPlayer().eatFood(otherPlayer.getMass() / 10);
                   }
 
+                  // Update users
                   Main.gManager.getpManager().updatePlayer(packet.getPlayer().getUsername(), packet.getPlayer());
                   Main.gManager.getpManager().updatePlayer(otherPlayer.getUsername(), otherPlayer);
                   break;
                 }
                 case 1: { // food
                   packet.getPlayer().eatFood(20);
+
+                  // Update user
                   Main.gManager.getpManager().updatePlayer(packet.getPlayer().getUsername(), packet.getPlayer());
 
                   break;
                 }
                 case 2: { // spike
                   Main.gManager.kill(packet.getPlayer());
+
+                  // Update user
                   Main.gManager.getpManager().updatePlayer(packet.getPlayer().getUsername(), packet.getPlayer());
 
                   break;
                 }
                 default: { // air
+                  // map borders are managed client-side
                   break;
                 }
               }
@@ -106,6 +116,9 @@ public class Connection extends Thread {
               break;
             }
             case DISCONNECT: {
+              Main.gManager.getpManager().removePlayer(packet.getPlayer());
+              server.removeConnection(this);
+              socket.close();
               break;
             }
             case INFO: {

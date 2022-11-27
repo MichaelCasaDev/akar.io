@@ -16,6 +16,8 @@ public class GameManager {
     pManager = new PlayersManager();
     fManager = new FoodManager();
     sManager = new SpikeManager();
+
+    newGame();
   }
 
   public void newGame() {
@@ -56,6 +58,9 @@ public class GameManager {
   }
 
   public void kill(Player player) {
+    player.setDead(true);
+
+    pManager.updatePlayer(player.getUsername(), player);
   }
 
   public PlayersManager getpManager() {
