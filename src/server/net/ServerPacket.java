@@ -10,11 +10,15 @@ public class ServerPacket implements Serializable {
   private Player[] players;
   private Food[] foods;
   private Spike[] spikes;
+  private boolean canConnect;
+  private String avgPing;
 
-  public ServerPacket(Player[] players, Food[] foods, Spike[] spikes) {
+  public ServerPacket(Player[] players, Food[] foods, Spike[] spikes, boolean canConnect, String avgPing) {
     this.players = players;
     this.foods = foods;
     this.spikes = spikes;
+    this.canConnect = canConnect;
+    this.avgPing = avgPing;
   }
 
   public Player[] getPlayers() {
@@ -27,6 +31,14 @@ public class ServerPacket implements Serializable {
 
   public Spike[] getSpikes() {
     return spikes;
+  }
+
+  public boolean isCanConnect() {
+    return canConnect;
+  }
+
+  public String getAvgPing() {
+    return avgPing;
   }
 
 }

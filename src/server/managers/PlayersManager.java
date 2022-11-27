@@ -40,4 +40,14 @@ public class PlayersManager {
     }
   }
 
+  public boolean isUsernameAvailable(String username) {
+    for (int i = 0; i < players.size(); i++) {
+      if (players.get(i).getUsername().equals(username)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 }

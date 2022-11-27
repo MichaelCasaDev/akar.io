@@ -7,6 +7,7 @@ import server.entities.Player;
 public class ClientPacket implements Serializable {
   private Player player;
   private StatusEnum operation;
+  private long time;
 
   public static enum StatusEnum {
     MOVE,
@@ -15,9 +16,10 @@ public class ClientPacket implements Serializable {
     INFO
   }
 
-  public ClientPacket(Player player, StatusEnum operation) {
+  public ClientPacket(Player player, StatusEnum operation, long time) {
     this.player = player;
     this.operation = operation;
+    this.time = time;
   }
 
   public Player getPlayer() {
@@ -26,6 +28,10 @@ public class ClientPacket implements Serializable {
 
   public StatusEnum getOperation() {
     return operation;
+  }
+
+  public long getTime() {
+    return time;
   }
 
 }

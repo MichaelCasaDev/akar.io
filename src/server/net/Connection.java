@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Date;
 
 import server.Main;
+import server.entities.Food;
 import server.entities.Player;
+import server.entities.Spike;
 
 public class Connection extends Thread {
   private Socket socket;
@@ -81,19 +84,39 @@ public class Connection extends Thread {
                 }
               }
 
-              // Send back to client informations
-              output.writeObject(new ServerPacket(Main.gManager.getpManager().getPlayers(),
-                  Main.gManager.getfManager().getFoods(), Main.gManager.getsManager().getSpikes()));
+              // Send informations back to client
+              Player[] players = Main.gManager.getpManager().getPlayers();
+              Food[] foods = Main.gManager.getfManager().getFoods();
+              Spike[] spikes = Main.gManager.getsManager().getSpikes();
+              boolean canConnect = true;
+              String avgPing = calculateAvgPing(packet.getTime(), new Date().getTime());
 
+              output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
               break;
             }
             case CONNECT: {
+              // Send informations back to client
+              Player[] players = null;
+              Food[] foods = null;
+              Spike[] spikes = null;
+              boolean canConnect = Main.gManager.getpManager().isUsernameAvailable(packet.getPlayer().getUsername());
+              String avgPing = null;
+
+              output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
               break;
             }
             case DISCONNECT: {
               break;
             }
             case INFO: {
+              // Send informations back to client
+              Player[] players = Main.gManager.getpManager().getPlayers();
+              Food[] foods = null;
+              Spike[] spikes = null;
+              boolean canConnect = false;
+              String avgPing = null;
+
+              output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
               break;
             }
             default: {
@@ -130,6 +153,10 @@ public class Connection extends Thread {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private String calculateAvgPing(long initialTime, long endTime) {
+    return (initialTime - endTime) + "ms";
   }
 
 }
