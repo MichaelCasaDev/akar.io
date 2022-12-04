@@ -1,6 +1,8 @@
 package server.utils;
 
-public class Pos {
+import java.io.Serializable;
+
+public class Pos implements Serializable {
   private int posX;
   private int posY;
 
@@ -10,7 +12,7 @@ public class Pos {
   }
 
   public int getPosX() {
-    return posX;
+    return this.posX;
   }
 
   public void setPosX(int posX) {
@@ -18,15 +20,16 @@ public class Pos {
   }
 
   public int getPosY() {
-    return posY;
+    return this.posY;
   }
 
   public void setPosY(int posY) {
     this.posY = posY;
   }
 
-  public boolean collide(Pos pos, int size) {
-    return false;
+  @Override
+  public String toString() {
+    return "Pos [posX=" + this.posX + ", posY=" + this.posY + "]";
   }
 
 }

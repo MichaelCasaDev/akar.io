@@ -23,15 +23,15 @@ public class ClientPacket implements Serializable {
   }
 
   public Player getPlayer() {
-    return player;
+    return this.player;
   }
 
   public StatusEnum getOperation() {
-    return operation;
+    return this.operation;
   }
 
   public long getTime() {
-    return time;
+    return this.time;
   }
 
 }

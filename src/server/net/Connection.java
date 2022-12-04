@@ -16,6 +16,7 @@ public class Connection extends Thread {
   private Server server;
   private ObjectInputStream input;
   private ObjectOutputStream output;
+  private Player mePlayer;
 
   public Connection(Socket socket, Server server) {
     try {
@@ -39,10 +40,15 @@ public class Connection extends Thread {
     try {
       while (true) {
         Object o = input.readObject();
+
         if (!(o instanceof ClientPacket)) {
           System.out.println("Invalid packet from client");
         } else {
           ClientPacket packet = (ClientPacket) o;
+          System.out.println(packet.getOperation() + " - " + packet.getTime());
+          System.out.println("Pos: " + packet.getPlayer().getPos());
+          System.out.println("Mass: " + packet.getPlayer().getMass());
+          System.out.println("Collsions: " + Main.gManager.checkCollision(packet.getPlayer()));
 
           switch (packet.getOperation()) {
             case MOVE: {
@@ -57,39 +63,48 @@ public class Connection extends Thread {
                   }
 
                   // Other player is bigger
-                  if (otherPlayer.getMass() > packet.getPlayer().getMass()) {
+                  if (otherPlayer.getMass() > packet.getPlayer().getMass() + 10) {
                     Main.gManager.kill(packet.getPlayer());
                     otherPlayer.eatFood(packet.getPlayer().getMass() / 10);
 
                     // You are bigger
-                  } else {
+                  } else if (otherPlayer.getMass() < packet.getPlayer().getMass() + 10) {
                     Main.gManager.kill(otherPlayer);
                     packet.getPlayer().eatFood(otherPlayer.getMass() / 10);
                   }
 
                   // Update users
-                  Main.gManager.getpManager().updatePlayer(packet.getPlayer().getUsername(), packet.getPlayer());
-                  Main.gManager.getpManager().updatePlayer(otherPlayer.getUsername(), otherPlayer);
+                  Main.gManager.getpManager().updatePlayer(packet.getPlayer());
+                  Main.gManager.getpManager().updatePlayer(otherPlayer);
+
                   break;
                 }
                 case 1: { // food
-                  packet.getPlayer().eatFood(20);
+                  Food otherFood = Main.gManager.getOtherFoodCollision(packet.getPlayer());
+                  if (!otherFood.isEat()) {
+                    Main.gManager.getfManager().eatFood(otherFood);
+                    packet.getPlayer().eatFood(20);
+                  }
 
                   // Update user
-                  Main.gManager.getpManager().updatePlayer(packet.getPlayer().getUsername(), packet.getPlayer());
+                  Main.gManager.getpManager().updatePlayer(packet.getPlayer());
 
                   break;
                 }
                 case 2: { // spike
-                  Main.gManager.kill(packet.getPlayer());
+                  if (packet.getPlayer().getMass() > 60) {
+                    Main.gManager.kill(packet.getPlayer());
+                  }
 
                   // Update user
-                  Main.gManager.getpManager().updatePlayer(packet.getPlayer().getUsername(), packet.getPlayer());
+                  Main.gManager.getpManager().updatePlayer(packet.getPlayer());
 
                   break;
                 }
                 default: { // air
                   // map borders are managed client-side
+                  Main.gManager.getpManager().updatePlayer(packet.getPlayer());
+
                   break;
                 }
               }
@@ -101,24 +116,29 @@ public class Connection extends Thread {
               boolean canConnect = true;
               String avgPing = calculateAvgPing(packet.getTime(), new Date().getTime());
 
+              this.mePlayer = packet.getPlayer();
               output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
+
               break;
             }
             case CONNECT: {
-              // Send informations back to client
-              Player[] players = null;
-              Food[] foods = null;
-              Spike[] spikes = null;
-              boolean canConnect = Main.gManager.getpManager().isUsernameAvailable(packet.getPlayer().getUsername());
-              String avgPing = null;
+              Main.gManager.getpManager().addPlayer(packet.getPlayer());
 
+              // Send informations back to client
+              Player[] players = Main.gManager.getpManager().getPlayers();
+              Food[] foods = Main.gManager.getfManager().getFoods();
+              Spike[] spikes = Main.gManager.getsManager().getSpikes();
+              boolean canConnect = Main.gManager.getpManager().isUsernameAvailable(packet.getPlayer().getUsername());
+              String avgPing = calculateAvgPing(packet.getTime(), new Date().getTime());
+
+              this.mePlayer = packet.getPlayer();
               output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
+
               break;
             }
             case DISCONNECT: {
-              Main.gManager.getpManager().removePlayer(packet.getPlayer());
-              server.removeConnection(this);
-              socket.close();
+              disconnect();
+
               break;
             }
             case INFO: {
@@ -129,7 +149,9 @@ public class Connection extends Thread {
               boolean canConnect = false;
               String avgPing = null;
 
+              this.mePlayer = packet.getPlayer();
               output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
+
               break;
             }
             default: {
@@ -150,6 +172,7 @@ public class Connection extends Thread {
     try {
       socket.close();
       this.server.removeConnection(this);
+      Main.gManager.getpManager().removePlayer(this.mePlayer);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -162,9 +185,11 @@ public class Connection extends Thread {
    */
   public void sendMessage(ServerPacket packet) {
     try {
-      this.output.writeObject(packet);
+      output.reset();
+      output.writeObject(packet);
     } catch (IOException e) {
       e.printStackTrace();
+      disconnect();
     }
   }
 

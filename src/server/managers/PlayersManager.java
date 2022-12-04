@@ -32,9 +32,9 @@ public class PlayersManager {
     return playersArr;
   }
 
-  public void updatePlayer(String username, Player otherPlayer) {
+  public void updatePlayer(Player otherPlayer) {
     for (int i = 0; i < players.size(); i++) {
-      if (players.get(i).getUsername().equals(username)) {
+      if (players.get(i).getUsername().equals(otherPlayer.getUsername())) {
         players.set(i, otherPlayer);
       }
     }

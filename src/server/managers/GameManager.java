@@ -9,6 +9,7 @@ public class GameManager {
   private FoodManager fManager;
   private SpikeManager sManager;
 
+  // game map sizes
   private final int sizeX = 4000;
   private final int sizeY = 4000;
 
@@ -27,19 +28,20 @@ public class GameManager {
 
   public int checkCollision(Player p) {
     for (Player pX : pManager.getPlayers()) {
-      if (pX.getPos().collide(p.getPos(), p.getMass())) {
+      if (!p.getUsername().equals(pX.getUsername())
+          && p.collide(pX.getMass(), pX.getMass(), pX.getPos().getPosX(), pX.getPos().getPosY())) {
         return 0;
       }
     }
 
     for (Food fX : fManager.getFoods()) {
-      if (fX.getPos().collide(p.getPos(), p.getMass())) {
+      if (fX != null && p.collide(20, 20, fX.getPos().getPosX(), fX.getPos().getPosY())) {
         return 1;
       }
     }
 
     for (Spike sX : sManager.getSpikes()) {
-      if (sX.getPos().collide(p.getPos(), p.getMass())) {
+      if (p.collide(sX.getSize(), sX.getSize(), sX.getPos().getPosX(), sX.getPos().getPosY())) {
         return 2;
       }
     }
@@ -49,8 +51,19 @@ public class GameManager {
 
   public Player getOtherPlayerCollision(Player p) {
     for (Player pX : pManager.getPlayers()) {
-      if (pX.getPos().collide(p.getPos(), p.getMass())) {
+      if (!p.getUsername().equals(pX.getUsername())
+          && p.collide(pX.getMass(), pX.getMass(), pX.getPos().getPosX(), pX.getPos().getPosY()) && !pX.isDead()) {
         return pX;
+      }
+    }
+
+    return null;
+  }
+
+  public Food getOtherFoodCollision(Player p) {
+    for (Food fX : fManager.getFoods()) {
+      if (fX != null && p.collide(20, 20, fX.getPos().getPosX(), fX.getPos().getPosY())) {
+        return fX;
       }
     }
 
@@ -60,7 +73,7 @@ public class GameManager {
   public void kill(Player player) {
     player.setDead(true);
 
-    pManager.updatePlayer(player.getUsername(), player);
+    pManager.updatePlayer(player);
   }
 
   public PlayersManager getpManager() {

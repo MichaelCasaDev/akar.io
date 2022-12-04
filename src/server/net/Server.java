@@ -12,6 +12,7 @@ public class Server {
   public Server() {
     try {
       server = new ServerSocket(7373, 5);
+      connections = new ArrayList<Connection>();
 
       System.out.println("Server attivo " + server.getLocalSocketAddress());
 

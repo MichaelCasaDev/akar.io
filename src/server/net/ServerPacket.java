@@ -1,6 +1,7 @@
 package server.net;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import server.entities.Food;
 import server.entities.Player;
@@ -22,23 +23,30 @@ public class ServerPacket implements Serializable {
   }
 
   public Player[] getPlayers() {
-    return players;
+    return this.players;
   }
 
   public Food[] getFoods() {
-    return foods;
+    return this.foods;
   }
 
   public Spike[] getSpikes() {
-    return spikes;
+    return this.spikes;
   }
 
   public boolean isCanConnect() {
-    return canConnect;
+    return this.canConnect;
   }
 
   public String getAvgPing() {
-    return avgPing;
+    return this.avgPing;
+  }
+
+  @Override
+  public String toString() {
+    return "ServerPacket [players=" + Arrays.toString(this.players) + ", foods=" + Arrays.toString(this.foods)
+        + ", spikes="
+        + Arrays.toString(this.spikes) + ", avgPing=" + this.avgPing + "]";
   }
 
 }

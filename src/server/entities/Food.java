@@ -1,18 +1,22 @@
 package server.entities;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.awt.Color;
 
 import server.utils.Pos;
 
 public class Food implements Serializable {
   private Pos pos;
-  private Date eatenTime = null;
+  private Color color;
+  private boolean isEaten;
   private int id;
+  private final int respawnRate = 30;
 
-  public Food(Pos pos, int id) {
+  public Food(Pos pos, Color color, int id) {
     this.pos = pos;
     this.id = id;
+    this.color = color;
+    this.isEaten = false;
   }
 
   public Pos getPos() {
@@ -20,22 +24,35 @@ public class Food implements Serializable {
   }
 
   public void eat() {
-    this.eatenTime = new Date();
+    this.isEaten = true;
+
+    // Respawn food after x seconds
+    (new Thread() {
+      public void run() {
+        try {
+          Thread.sleep(respawnRate * 1000);
+
+          spawn();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      }
+    }).start();
   }
 
   public boolean isEat() {
-    return this.eatenTime != null;
+    return this.isEaten;
   }
 
   public void spawn() {
-    this.eatenTime = null;
-  }
-
-  public Date getEatenTime() {
-    return eatenTime;
+    this.isEaten = false;
   }
 
   public int getId() {
     return this.id;
+  }
+
+  public Color getColor() {
+    return color;
   }
 }

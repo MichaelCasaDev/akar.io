@@ -13,7 +13,7 @@ public class SpikeManager {
   }
 
   public void initSpike(int sizeX, int sizeY) {
-    for (int i = 0; i < sizeX * sizeY / 10000; i++) {
+    for (int i = 0; i < sizeX * sizeY / 1000000; i++) {
       int posX = (int) ((Math.random() * (sizeX - 0)) + 0);
       int posY = (int) ((Math.random() * (sizeY - 0)) + 0);
 
