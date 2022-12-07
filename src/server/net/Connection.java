@@ -46,9 +46,6 @@ public class Connection extends Thread {
         } else {
           ClientPacket packet = (ClientPacket) o;
           System.out.println(packet.getOperation() + " - " + packet.getTime());
-          System.out.println("Pos: " + packet.getPlayer().getPos());
-          System.out.println("Mass: " + packet.getPlayer().getMass());
-          System.out.println("Collsions: " + Main.gManager.checkCollision(packet.getPlayer()));
 
           switch (packet.getOperation()) {
             case MOVE: {
@@ -125,13 +122,13 @@ public class Connection extends Thread {
               Main.gManager.getpManager().addPlayer(packet.getPlayer());
 
               // Send informations back to client
-              Player[] players = Main.gManager.getpManager().getPlayers();
+              Player[] players = Main.gManager.getpManager().getPlayersAndGeneratePos(packet.getPlayer());
               Food[] foods = Main.gManager.getfManager().getFoods();
               Spike[] spikes = Main.gManager.getsManager().getSpikes();
               boolean canConnect = Main.gManager.getpManager().isUsernameAvailable(packet.getPlayer().getUsername());
               String avgPing = calculateAvgPing(packet.getTime(), new Date().getTime());
 
-              this.mePlayer = packet.getPlayer();
+              this.mePlayer = Main.gManager.getpManager().getFullPlayerMe(packet.getPlayer());
               output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
 
               break;

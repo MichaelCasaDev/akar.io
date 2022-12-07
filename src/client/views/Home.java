@@ -20,6 +20,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import client.ClientManager;
+import client.ClientManager.WindowStates;
+import server.entities.Player;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -32,14 +34,12 @@ public class Home extends JPanel implements ActionListener, KeyListener {
   private String msg = "Username";
 
   private ClientManager clientManager;
-  private JPanel nextPanel;
 
   /**
    * Create the panel.
    */
-  public Home(ClientManager clientManager, JPanel nextPanel) {
+  public Home(ClientManager clientManager) {
     this.clientManager = clientManager;
-    this.nextPanel = nextPanel;
 
     Dimension newSize = new Dimension(1280, 768);
     setSize(newSize);
@@ -109,8 +109,10 @@ public class Home extends JPanel implements ActionListener, KeyListener {
 
   public void actionPerformed(ActionEvent e) {
     if (e.getSource().equals(btGioca)) {
-      System.out.println("colore: " + newColor + " persona: " + msg);
-      clientManager.getWindowManager().setjPanel(nextPanel);
+      System.out.println("colore: " + newColor + " username: " + msg);
+
+      clientManager.setPlayerMe(new Player(null, newColor, msg));
+      clientManager.setWindowStates(WindowStates.PLAY);
     }
     if (e.getSource().equals(btColor)) {
       newColor = JColorChooser.showDialog(null, "Choose a color", Color.RED);

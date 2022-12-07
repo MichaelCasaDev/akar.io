@@ -2,6 +2,8 @@ package client;
 
 import javax.swing.*;
 
+import client.views.Gameplay;
+
 public class WindowManager extends JFrame {
   private JPanel jPanel;
   public static int WIDTH = 1280;
@@ -27,6 +29,11 @@ public class WindowManager extends JFrame {
 
   public void setjPanel(JPanel jPanel) {
     this.jPanel = jPanel;
+
+    if (jPanel instanceof Gameplay) {
+      ((Gameplay) jPanel).setvPort(vport);
+    }
+
     vport.add(this.jPanel);
   }
 

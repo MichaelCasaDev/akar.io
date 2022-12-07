@@ -5,7 +5,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Date;
 
+import javax.swing.JPanel;
+
+import server.entities.Player;
 import server.net.ClientPacket;
+import server.net.ServerPacket;
 import server.net.ClientPacket.StatusEnum;
 
 public class ClientManager {
@@ -18,8 +22,10 @@ public class ClientManager {
 
   private String remoteHost;
   private int remotePort;
+  private Player playerMe;
 
   private WindowManager windowManager;
+  private JPanel[] jPanels;
 
   public enum WindowStates {
     MENU,
@@ -43,6 +49,25 @@ public class ClientManager {
 
   public void setWindowStates(WindowStates windowStates) {
     this.windowStates = windowStates;
+
+    System.out.println(windowStates);
+    switch (this.windowStates) {
+      case MENU: {
+        windowManager.setjPanel(jPanels[1]);
+        break;
+      }
+      case DEAD: {
+        windowManager.setjPanel(jPanels[3]);
+        break;
+      }
+      case PLAY: {
+        disconnect();
+
+        tryConnection();
+        windowManager.setjPanel(jPanels[2]);
+        break;
+      }
+    }
   }
 
   public Socket getConnection() {
@@ -77,44 +102,69 @@ public class ClientManager {
     this.remotePort = remotePort;
   }
 
-  public void tryConnection() {
-    (new Thread() {
-      public void run() {
-        while (connected != ConnectionStates.CONNECTED) {
-          try {
-            connected = ConnectionStates.CONNECTING;
+  public void setPlayerMe(Player playerMe) {
+    this.playerMe = playerMe;
+  }
 
-            connection = new Socket(remoteHost, remotePort);
-            output = new ObjectOutputStream(connection.getOutputStream());
-            input = new ObjectInputStream(connection.getInputStream());
+  public Player getPlayerMe() {
+    return playerMe;
+  }
 
-            connected = ConnectionStates.CONNECTED;
+  public synchronized void tryConnection() {
+    while (connected != ConnectionStates.CONNECTED) {
+      try {
+        connected = ConnectionStates.CONNECTING;
 
-            System.out.println("Connected to the server!");
-            System.out.println(connection);
+        connection = new Socket(remoteHost, remotePort);
+        output = new ObjectOutputStream(connection.getOutputStream());
+        input = new ObjectInputStream(connection.getInputStream());
 
-            output.writeObject(new ClientPacket(null, StatusEnum.CONNECT, new Date().getTime()));
-          } catch (Exception ex) {
-            System.out.println("Server offline!");
-            System.out.println("Rety in 2 seconds...");
-            connected = ConnectionStates.CONNECTING;
+        System.out.println("Connected to the server!");
+        System.out.println(connection);
+
+        output.writeObject(new ClientPacket(playerMe, StatusEnum.CONNECT, new Date().getTime()));
+
+        try {
+          Object o = input.readObject();
+          if (!(o instanceof ServerPacket)) {
+            System.out.println("Unknown packet from server. Rejected!");
+          } else {
+            ServerPacket sPacket = (ServerPacket) o;
+
+            for (Player p : sPacket.getPlayers()) {
+              if (p.getUsername().equals(playerMe.getUsername())) {
+                playerMe.setPos(p.getPos());
+
+                connected = ConnectionStates.CONNECTED;
+              }
+            }
           }
-
-          try {
-            Thread.sleep(2000);
-          } catch (Exception ex) {
-            ex.printStackTrace();
-          }
+        } catch (Exception e) {
+          System.out.println("Errore ricezione dati");
         }
+
+      } catch (Exception ex) {
+        System.out.println("Server offline!");
+        System.out.println("Rety in 2 seconds...");
+        connected = ConnectionStates.CONNECTING;
       }
-    }).start();
+
+      try {
+        Thread.sleep(2000);
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+    }
   }
 
   public void disconnect() {
     try {
-      input.close();
-      output.close();
-      connection.close();
+      if (input != null)
+        input.close();
+      if (output != null)
+        output.close();
+      if (connection != null)
+        connection.close();
 
       connected = ConnectionStates.DISCONNECTED;
     } catch (Exception e) {
@@ -124,5 +174,9 @@ public class ClientManager {
 
   public WindowManager getWindowManager() {
     return windowManager;
+  }
+
+  public void addPanels(JPanel[] panels) {
+    this.jPanels = panels;
   }
 }

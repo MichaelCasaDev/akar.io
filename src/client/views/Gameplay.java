@@ -36,7 +36,6 @@ public class Gameplay extends JPanel implements ActionListener {
   public static int WIDTH = 1280;
   public static int HEIGHT = 768;
 
-  private Player playerMe;
   private Player[] otherPlayers;
   private Food[] foods;
   private Spike[] spikes;
@@ -47,11 +46,10 @@ public class Gameplay extends JPanel implements ActionListener {
   private double scale = 1;
 
   private ClientManager clientManager;
-  private boolean okSendPck = false; // Make client to send packets to server after have elaborated the ones received
-                                     // from the server
+  private boolean okSendPck = true; // Make client to send packets to server after have elaborated the ones received
+                                    // from the server
 
-  public Gameplay(Player playerMe, ClientManager clientManager) {
-    this.playerMe = playerMe;
+  public Gameplay(ClientManager clientManager) {
     this.clientManager = clientManager;
 
     Timer timer = new Timer(60, this);
@@ -80,7 +78,8 @@ public class Gameplay extends JPanel implements ActionListener {
       try {
         if (okSendPck) {
           clientManager.getOutput().reset();
-          clientManager.getOutput().writeObject(new ClientPacket(playerMe, StatusEnum.MOVE, new Date().getTime()));
+          clientManager.getOutput()
+              .writeObject(new ClientPacket(clientManager.getPlayerMe(), StatusEnum.MOVE, new Date().getTime()));
 
           okSendPck = false;
         }
@@ -88,7 +87,7 @@ public class Gameplay extends JPanel implements ActionListener {
         drawMap(g2);
         drawFoods(g2);
 
-        if (!playerMe.isDead()) {
+        if (!clientManager.getPlayerMe().isDead()) {
           drawPlayerMe(g2);
         } else {
           clientManager.setWindowStates(WindowStates.DEAD);
@@ -118,35 +117,37 @@ public class Gameplay extends JPanel implements ActionListener {
       this.dy = mousePosition.y;
     }
 
-    if (clientManager.getConnected() == ConnectionStates.CONNECTED && !playerMe.isDead()) {
-      double dx = this.dx - playerMe.getPos().getPosX() - (playerMe.getMass() * scale) / 2;
-      double dy = this.dy - playerMe.getPos().getPosY() - (playerMe.getMass() * scale) / 2;
+    if (clientManager.getConnected() == ConnectionStates.CONNECTED && !clientManager.getPlayerMe().isDead()) {
+      double dx = this.dx - clientManager.getPlayerMe().getPos().getPosX()
+          - (clientManager.getPlayerMe().getMass() * scale) / 2;
+      double dy = this.dy - clientManager.getPlayerMe().getPos().getPosY()
+          - (clientManager.getPlayerMe().getMass() * scale) / 2;
 
-      double dxMul = Math.abs(dx) < ((playerMe.getMass() * scale) / 2) * 5 ? 3 : 6;
-      double dyMul = Math.abs(dy) < (playerMe.getMass() / 2) * 5 ? 3 : 6;
+      double dxMul = Math.abs(dx) < ((clientManager.getPlayerMe().getMass() * scale) / 2) * 5 ? 3 : 6;
+      double dyMul = Math.abs(dy) < (clientManager.getPlayerMe().getMass() / 2) * 5 ? 3 : 6;
 
       if (dx * dx + dy * dy > 10) {
         double angle = Math.atan2(dy, dx);
-        int newPosY = (int) (playerMe.getPos().getPosY() + (dyMul * Math.sin(angle)));
-        int newPosX = (int) (playerMe.getPos().getPosX() + (dxMul * Math.cos(angle)));
+        int newPosY = (int) (clientManager.getPlayerMe().getPos().getPosY() + (dyMul * Math.sin(angle)));
+        int newPosX = (int) (clientManager.getPlayerMe().getPos().getPosX() + (dxMul * Math.cos(angle)));
 
-        if ((playerMe.getPos().getPosX() + playerMe.getMass() / 2) >= 9000
-            || (playerMe.getPos().getPosX() + playerMe.getMass() / 2) <= 1000) {
+        if ((clientManager.getPlayerMe().getPos().getPosX() - clientManager.getPlayerMe().getMass()) >= 9000
+            || (clientManager.getPlayerMe().getPos().getPosX() + clientManager.getPlayerMe().getMass()) <= 1000) {
           if (newPosX < 9000 && newPosX > 1000) {
-            playerMe.getPos().setPosX(newPosX);
+            clientManager.getPlayerMe().getPos().setPosX(newPosX);
 
             updateViewPosition();
           }
-        } else if ((playerMe.getPos().getPosY() + playerMe.getMass() / 2) >= 9000
-            || (playerMe.getPos().getPosY() + playerMe.getMass() / 2) <= 1000) {
+        } else if ((clientManager.getPlayerMe().getPos().getPosY() - clientManager.getPlayerMe().getMass()) >= 9000
+            || (clientManager.getPlayerMe().getPos().getPosY() + clientManager.getPlayerMe().getMass()) <= 1000) {
           if (newPosY < 9000 && newPosY > 1000) {
-            playerMe.getPos().setPosY(newPosY);
+            clientManager.getPlayerMe().getPos().setPosY(newPosY);
 
             updateViewPosition();
           }
         } else {
-          playerMe.getPos().setPosX(newPosX);
-          playerMe.getPos().setPosY(newPosY);
+          clientManager.getPlayerMe().getPos().setPosX(newPosX);
+          clientManager.getPlayerMe().getPos().setPosY(newPosY);
 
           updateViewPosition();
         }
@@ -159,7 +160,10 @@ public class Gameplay extends JPanel implements ActionListener {
 
   private void drawInfo(Graphics2D g2) {
     g2.setColor(new Color(255, 0, 0));
-    g2.drawString("Player cords - (x: " + playerMe.getPos().getPosX() + ", y: " + playerMe.getPos().getPosY() + ")", 32,
+    g2.drawString(
+        "Player cords - (x: " + clientManager.getPlayerMe().getPos().getPosX() + ", y: "
+            + clientManager.getPlayerMe().getPos().getPosY() + ")",
+        32,
         32);
     g2.drawString("Total FOODS - (" + foods.length + ")", 32,
         64);
@@ -173,10 +177,10 @@ public class Gameplay extends JPanel implements ActionListener {
 
   private void drawSpikes(Graphics2D g2) {
     for (int i = 0; i < spikes.length; i++) {
-      if (spikes[i].getPos().getPosX() < playerMe.getPos().getPosX() + WIDTH / 1.8
-          && spikes[i].getPos().getPosX() > playerMe.getPos().getPosX() - WIDTH / 1.8
-          && spikes[i].getPos().getPosY() < playerMe.getPos().getPosY() + HEIGHT / 1.8
-          && spikes[i].getPos().getPosY() > playerMe.getPos().getPosY() - HEIGHT / 1.8) {
+      if (spikes[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + WIDTH / 1.8
+          && spikes[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - WIDTH / 1.8
+          && spikes[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + HEIGHT / 1.8
+          && spikes[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - HEIGHT / 1.8) {
         try {
           File img = new File("src/client/spike.png");
           BufferedImage image = ImageIO.read(img);
@@ -194,10 +198,10 @@ public class Gameplay extends JPanel implements ActionListener {
   private void drawFoods(Graphics2D g2) {
     for (int i = 0; i < foods.length; i++) {
       if (foods[i] != null) {
-        if (foods[i].getPos().getPosX() < playerMe.getPos().getPosX() + WIDTH / 2
-            && foods[i].getPos().getPosX() > playerMe.getPos().getPosX() - WIDTH / 2
-            && foods[i].getPos().getPosY() < playerMe.getPos().getPosY() + HEIGHT / 2
-            && foods[i].getPos().getPosY() > playerMe.getPos().getPosY() - HEIGHT / 2) {
+        if (foods[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + WIDTH / 2
+            && foods[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - WIDTH / 2
+            && foods[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + HEIGHT / 2
+            && foods[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - HEIGHT / 2) {
           g2.setColor(foods[i].getColor());
           g2.fill(new Ellipse2D.Double(foods[i].getPos().getPosX(), foods[i].getPos().getPosY(),
               20 * scale, 20 * scale));
@@ -208,11 +212,12 @@ public class Gameplay extends JPanel implements ActionListener {
 
   private void drawPlayers(Graphics2D g2) {
     for (int i = 0; i < otherPlayers.length; i++) {
-      if (!otherPlayers[i].getUsername().equals(playerMe.getUsername()) && !otherPlayers[i].isDead()) {
-        if (otherPlayers[i].getPos().getPosX() < playerMe.getPos().getPosX() + WIDTH / 2
-            && otherPlayers[i].getPos().getPosX() > playerMe.getPos().getPosX() - WIDTH / 2
-            && otherPlayers[i].getPos().getPosY() < playerMe.getPos().getPosY() + HEIGHT / 2
-            && otherPlayers[i].getPos().getPosY() > playerMe.getPos().getPosY() - HEIGHT / 2) {
+      if (!otherPlayers[i].getUsername().equals(clientManager.getPlayerMe().getUsername())
+          && !otherPlayers[i].isDead()) {
+        if (otherPlayers[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + WIDTH / 2
+            && otherPlayers[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - WIDTH / 2
+            && otherPlayers[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + HEIGHT / 2
+            && otherPlayers[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - HEIGHT / 2) {
           g2.setColor(otherPlayers[i].getColor());
           g2.fill(new Ellipse2D.Double(otherPlayers[i].getPos().getPosX(), otherPlayers[i].getPos().getPosY(),
               otherPlayers[i].getMass() * scale, otherPlayers[i].getMass() * scale));
@@ -274,15 +279,18 @@ public class Gameplay extends JPanel implements ActionListener {
   }
 
   private void drawPlayerMe(Graphics2D g2) {
-    g2.setColor(playerMe.getColor());
-    g2.fill(new Ellipse2D.Double(playerMe.getPos().getPosX(), playerMe.getPos().getPosY(), playerMe.getMass() * scale,
-        playerMe.getMass() * scale));
+    g2.setColor(clientManager.getPlayerMe().getColor());
+    g2.fill(new Ellipse2D.Double(clientManager.getPlayerMe().getPos().getPosX(),
+        clientManager.getPlayerMe().getPos().getPosY(), clientManager.getPlayerMe().getMass() * scale,
+        clientManager.getPlayerMe().getMass() * scale));
   }
 
   private void updateViewPosition() {
     Point view = new Point(
-        (int) playerMe.getPos().getPosX() - (WIDTH / 2) + ((int) (playerMe.getMass() * scale) / 2),
-        (int) playerMe.getPos().getPosY() - (HEIGHT / 2) + ((int) (playerMe.getMass() * scale) / 2));
+        (int) clientManager.getPlayerMe().getPos().getPosX() - (WIDTH / 2)
+            + ((int) (clientManager.getPlayerMe().getMass() * scale) / 2),
+        (int) clientManager.getPlayerMe().getPos().getPosY() - (HEIGHT / 2)
+            + ((int) (clientManager.getPlayerMe().getMass() * scale) / 2));
     vPort.setViewPosition(view);
   }
 
@@ -310,9 +318,9 @@ public class Gameplay extends JPanel implements ActionListener {
                 avgPing = sPacket.getAvgPing();
 
                 for (Player p : otherPlayers) {
-                  if (p.getUsername().equals(playerMe.getUsername())) {
-                    playerMe.setMass(p.getMass());
-                    playerMe.setDead(p.isDead());
+                  if (p.getUsername().equals(clientManager.getPlayerMe().getUsername())) {
+                    clientManager.getPlayerMe().setMass(p.getMass());
+                    clientManager.getPlayerMe().setDead(p.isDead());
 
                     scale = calculateScale();
                   }
@@ -324,7 +332,7 @@ public class Gameplay extends JPanel implements ActionListener {
 
             Thread.sleep(1000 / 60); // 17pps (packets-per-second)
           } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
           }
         }
       }

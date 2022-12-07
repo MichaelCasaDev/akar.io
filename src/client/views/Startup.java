@@ -6,9 +6,13 @@ import client.ClientManager;
 import client.ClientManager.WindowStates;
 
 public class Startup extends JPanel {
-  public Startup(ClientManager clientManager, JPanel nextPanel) {
-    setLayout(null);
+  private ClientManager clientManager;
 
+  public Startup(ClientManager clientManager) {
+    this.clientManager = clientManager;
+  }
+
+  public void launchAlert() {
     String addressAndPort = JOptionPane.showInputDialog(null,
         "Inserisci indirizzo IP e porta", "localhost:7373");
     String[] p = addressAndPort.split(":");
@@ -22,11 +26,7 @@ public class Startup extends JPanel {
       try {
         clientManager.setRemoteHost(p[0]);
         clientManager.setRemotePort(Integer.parseInt(p[1]));
-        clientManager.setWindowStates(WindowStates.PLAY);
-
-        clientManager.getWindowManager().setjPanel(nextPanel);
-
-        System.out.println("Connecting...");
+        clientManager.setWindowStates(WindowStates.MENU);
       } catch (NumberFormatException e) {
         JOptionPane.showMessageDialog(null, "La porta inserita non è valida!", "Errore",
             JOptionPane.ERROR_MESSAGE);
