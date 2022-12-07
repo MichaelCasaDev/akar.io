@@ -2,22 +2,22 @@ package client;
 
 import javax.swing.*;
 
-import client.views.Gameplay;
+import client.views.GameplayOLD;
 
-public class Window extends JFrame {
-  public Window() {
+public class WindowOLD extends JFrame {
+  public WindowOLD() {
     JFrame frame = new JFrame("Akar.IO");
     JScrollPane pane = new JScrollPane();
     JViewport vport = new JViewport();
-    Gameplay panel = new Gameplay();
+    GameplayOLD panel = new GameplayOLD();
 
+    panel.setvPort(vport);
     vport.add(panel);
     frame.setVisible(true);
     pane.setViewport(vport);
     vport.add(panel);
     frame.add(pane);
-    frame.setSize(1280, 768);
-    panel.setvPort(vport);
+    frame.setSize(GameplayOLD.WIDTH, GameplayOLD.HEIGHT);
     pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
     pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

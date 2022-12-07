@@ -14,10 +14,10 @@ public class FoodManager {
     this.foods = new ArrayList<Food>();
   }
 
-  public void initFood(int sizeX, int sizeY) {
-    for (int i = 0; i < sizeX * sizeY / 100000; i++) {
-      int posX = (int) ((Math.random() * (sizeX - 0)) + 0);
-      int posY = (int) ((Math.random() * (sizeY - 0)) + 0);
+  public void initFood(int tot) {
+    for (int i = 0; i < tot; i++) {
+      int posX = (int) ((Math.random() * (9000 - 1000)) + 1000);
+      int posY = (int) ((Math.random() * (9000 - 1000)) + 1000);
 
       foods.add(new Food(new Pos(posX, posY), randomColor(), i));
     }

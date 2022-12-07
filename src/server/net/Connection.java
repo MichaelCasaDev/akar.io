@@ -65,12 +65,12 @@ public class Connection extends Thread {
                   // Other player is bigger
                   if (otherPlayer.getMass() > packet.getPlayer().getMass() + 10) {
                     Main.gManager.kill(packet.getPlayer());
-                    otherPlayer.eatFood(packet.getPlayer().getMass() / 10);
+                    otherPlayer.eatFood(packet.getPlayer().getMass() / 5);
 
                     // You are bigger
                   } else if (otherPlayer.getMass() < packet.getPlayer().getMass() + 10) {
                     Main.gManager.kill(otherPlayer);
-                    packet.getPlayer().eatFood(otherPlayer.getMass() / 10);
+                    packet.getPlayer().eatFood(otherPlayer.getMass() / 5);
                   }
 
                   // Update users
@@ -83,7 +83,7 @@ public class Connection extends Thread {
                   Food otherFood = Main.gManager.getOtherFoodCollision(packet.getPlayer());
                   if (!otherFood.isEat()) {
                     Main.gManager.getfManager().eatFood(otherFood);
-                    packet.getPlayer().eatFood(20);
+                    packet.getPlayer().eatFood(4);
                   }
 
                   // Update user
@@ -161,7 +161,8 @@ public class Connection extends Thread {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      System.out.println("Error from client! Disconnecting...");
+      disconnect();
     }
   }
 
@@ -173,6 +174,7 @@ public class Connection extends Thread {
       socket.close();
       this.server.removeConnection(this);
       Main.gManager.getpManager().removePlayer(this.mePlayer);
+      System.out.println("Client disconnected!");
     } catch (Exception e) {
       e.printStackTrace();
     }

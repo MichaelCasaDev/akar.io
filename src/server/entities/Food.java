@@ -10,7 +10,7 @@ public class Food implements Serializable {
   private Color color;
   private boolean isEaten;
   private int id;
-  private final int respawnRate = 30;
+  private final int respawnRate = 45; // 45s (respawn food in the same pos after x seconds)
 
   public Food(Pos pos, Color color, int id) {
     this.pos = pos;
