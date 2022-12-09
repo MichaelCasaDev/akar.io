@@ -19,8 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import client.ClientManager;
-import client.ClientManager.WindowStates;
+import client.managers.ClientManager;
+import client.managers.ClientManager.WindowStates;
 import server.entities.Player;
 
 import javax.swing.JButton;
@@ -95,12 +95,17 @@ public class Home extends JPanel implements ActionListener, KeyListener {
 
     try {
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      File img = new File("src/client/home.png");
+      File img = new File("src/client/imgs/home.png");
       BufferedImage image = ImageIO.read(img);
+
       g2.drawImage(image, 0, 0, 1280, 768, this);
-      g2.drawString(msg, 560, 389);
+
       g2.setColor(newColor);
+      g2.drawString(msg, 560, 389);
+
       g2.fill(new Ellipse2D.Double(708.5, 364.5, 40, 40));
+
+      clientManager.generateClassifica(g2);
       g2.dispose();
     } catch (Exception e) {
       e.printStackTrace();

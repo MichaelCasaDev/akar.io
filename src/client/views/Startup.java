@@ -2,8 +2,9 @@ package client.views;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import client.ClientManager;
-import client.ClientManager.WindowStates;
+
+import client.managers.ClientManager;
+import client.managers.ClientManager.WindowStates;
 
 public class Startup extends JPanel {
   private ClientManager clientManager;

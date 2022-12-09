@@ -1,4 +1,4 @@
-package client;
+package client.managers;
 
 import javax.swing.*;
 
@@ -43,6 +43,6 @@ public class WindowManager extends JFrame {
 
   public void close() {
     System.out.println("Closed");
-    dispose();
+    System.exit(0);
   }
 }

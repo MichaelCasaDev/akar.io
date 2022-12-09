@@ -2,6 +2,8 @@ package client;
 
 import javax.swing.JPanel;
 
+import client.managers.ClientManager;
+import client.managers.WindowManager;
 import client.views.Dead;
 import client.views.Gameplay;
 import client.views.Home;

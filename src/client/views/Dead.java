@@ -1,7 +1,5 @@
 package client.views;
 
-import client.ClientManager;
-import client.ClientManager.WindowStates;
 import server.entities.Player;
 
 import java.awt.Dimension;
@@ -15,6 +13,9 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import client.managers.ClientManager;
+import client.managers.ClientManager.WindowStates;
 
 public class Dead extends JPanel implements ActionListener {
   private JButton btRiGioca;
@@ -51,7 +52,7 @@ public class Dead extends JPanel implements ActionListener {
     Graphics2D g2 = (Graphics2D) g;
 
     try {
-      File img = new File("src/client/morte.png");
+      File img = new File("src/client/imgs/morte.png");
       BufferedImage image = ImageIO.read(img);
       g2.drawImage(image, 0, 0, 1280, 768, this);
       g2.dispose();

@@ -1,11 +1,15 @@
-package client;
+package client.managers;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
 
 import server.entities.Player;
 import server.net.ClientPacket;
@@ -23,6 +27,7 @@ public class ClientManager {
   private String remoteHost;
   private int remotePort;
   private Player playerMe;
+  private Player[] otherPlayers;
 
   private WindowManager windowManager;
   private JPanel[] jPanels;
@@ -53,6 +58,10 @@ public class ClientManager {
     System.out.println(windowStates);
     switch (this.windowStates) {
       case MENU: {
+        disconnect();
+        tryConnection(StatusEnum.INFO);
+        disconnect();
+
         windowManager.setjPanel(jPanels[1]);
         break;
       }
@@ -62,8 +71,8 @@ public class ClientManager {
       }
       case PLAY: {
         disconnect();
+        tryConnection(StatusEnum.CONNECT);
 
-        tryConnection();
         windowManager.setjPanel(jPanels[2]);
         break;
       }
@@ -110,7 +119,7 @@ public class ClientManager {
     return playerMe;
   }
 
-  public synchronized void tryConnection() {
+  public synchronized void tryConnection(StatusEnum status) {
     while (connected != ConnectionStates.CONNECTED) {
       try {
         connected = ConnectionStates.CONNECTING;
@@ -122,7 +131,7 @@ public class ClientManager {
         System.out.println("Connected to the server!");
         System.out.println(connection);
 
-        output.writeObject(new ClientPacket(playerMe, StatusEnum.CONNECT, new Date().getTime()));
+        output.writeObject(new ClientPacket(playerMe, status, new Date().getTime()));
 
         try {
           Object o = input.readObject();
@@ -130,17 +139,31 @@ public class ClientManager {
             System.out.println("Unknown packet from server. Rejected!");
           } else {
             ServerPacket sPacket = (ServerPacket) o;
+            otherPlayers = sPacket.getPlayers();
 
-            for (Player p : sPacket.getPlayers()) {
-              if (p.getUsername().equals(playerMe.getUsername())) {
-                playerMe.setPos(p.getPos());
-
-                connected = ConnectionStates.CONNECTED;
+            if (status == StatusEnum.CONNECT) {
+              for (Player p : otherPlayers) {
+                if (p.getUsername().equals(playerMe.getUsername())) {
+                  playerMe.setPos(p.getPos());
+                }
               }
+            }
+
+            if (sPacket.isCanConnect() || status == StatusEnum.INFO) {
+              connected = ConnectionStates.CONNECTED;
+            }
+
+            if (!sPacket.isCanConnect() && status == StatusEnum.CONNECT) {
+              JOptionPane.showMessageDialog(null, "Lo username specificato è già in uso, scegliene un altro!", "Errore",
+                  JOptionPane.ERROR_MESSAGE);
+
+              windowManager.close();
+              break;
             }
           }
         } catch (Exception e) {
           System.out.println("Errore ricezione dati");
+          e.printStackTrace();
         }
 
       } catch (Exception ex) {
@@ -178,5 +201,25 @@ public class ClientManager {
 
   public void addPanels(JPanel[] panels) {
     this.jPanels = panels;
+  }
+
+  public void generateClassifica(Graphics2D g2) {
+    // draw table header
+    g2.setColor(new Color(0, 0, 0));
+    g2.drawString("#", 51, 175);
+    g2.drawString("Username", 188, 175);
+    g2.drawString("Punti", 354, 175);
+
+    for (int i = 0; i < otherPlayers.length; i++) {
+      if (i == 0) {
+        g2.drawString("1.", 51, 221);
+        g2.drawString(otherPlayers[i].getUsername(), 188, 221);
+        g2.drawString(otherPlayers[i].getMass() + "", 354, 221);
+      } else {
+        g2.drawString(i + 2 + ".", 51, 221 + 32 * i - 1);
+        g2.drawString(otherPlayers[i].getUsername(), 188, 221 + 32 * i - 1);
+        g2.drawString(otherPlayers[i].getMass() + "", 354, 221 + 32 * i - 1);
+      }
+    }
   }
 }

@@ -17,9 +17,9 @@ import java.awt.event.ActionListener;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import client.ClientManager;
-import client.ClientManager.ConnectionStates;
-import client.ClientManager.WindowStates;
+import client.managers.ClientManager;
+import client.managers.ClientManager.ConnectionStates;
+import client.managers.ClientManager.WindowStates;
 
 import java.awt.BasicStroke;
 
@@ -117,7 +117,8 @@ public class Gameplay extends JPanel implements ActionListener {
       this.dy = mousePosition.y;
     }
 
-    if (clientManager.getConnected() == ConnectionStates.CONNECTED && !clientManager.getPlayerMe().isDead()) {
+    if (clientManager.getConnected() == ConnectionStates.CONNECTED && clientManager.getPlayerMe() != null
+        && !clientManager.getPlayerMe().isDead()) {
       double dx = this.dx - clientManager.getPlayerMe().getPos().getPosX()
           - (clientManager.getPlayerMe().getMass() * scale) / 2;
       double dy = this.dy - clientManager.getPlayerMe().getPos().getPosY()
@@ -182,7 +183,7 @@ public class Gameplay extends JPanel implements ActionListener {
           && spikes[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + HEIGHT / 1.8
           && spikes[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - HEIGHT / 1.8) {
         try {
-          File img = new File("src/client/spike.png");
+          File img = new File("src/client/imgs/spike.png");
           BufferedImage image = ImageIO.read(img);
 
           g2.drawImage(image, spikes[i].getPos().getPosX(), spikes[i].getPos().getPosY(),
