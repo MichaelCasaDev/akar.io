@@ -2,7 +2,9 @@ package client.views;
 
 import server.entities.Player;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -55,6 +57,11 @@ public class Dead extends JPanel implements ActionListener {
       File img = new File("src/client/imgs/morte.png");
       BufferedImage image = ImageIO.read(img);
       g2.drawImage(image, 0, 0, 1280, 768, this);
+
+      g2.setFont(new Font("Arial", Font.PLAIN, 20));
+      g2.setColor(new Color(0, 0, 0));
+      g2.drawString(clientManager.getPlayerMe().getMass() + "", 668, 417);
+
       g2.dispose();
     } catch (Exception e) {
       e.printStackTrace();

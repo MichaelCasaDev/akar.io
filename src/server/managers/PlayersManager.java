@@ -70,8 +70,8 @@ public class PlayersManager {
         boolean okPos = false;
 
         while (!okPos) {
-          double randomX = Math.floor(Math.random() * 8800) + 1200;
-          double randomY = Math.floor(Math.random() * 8800) + 1200;
+          double randomX = Math.floor(Math.random() * 7600) + 1200;
+          double randomY = Math.floor(Math.random() * 7600) + 1200;
 
           playersArr[i].setPos(new Pos((int) randomX, (int) randomY));
 

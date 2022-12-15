@@ -19,6 +19,8 @@ public class WindowManager extends JFrame {
     pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
     pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
+    setIconImage(new ImageIcon("src/client/imgs/logo.png").getImage());
+
     frame.add(pane);
     frame.setSize(WIDTH, HEIGHT);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

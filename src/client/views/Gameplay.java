@@ -178,10 +178,10 @@ public class Gameplay extends JPanel implements ActionListener {
 
   private void drawSpikes(Graphics2D g2) {
     for (int i = 0; i < spikes.length; i++) {
-      if (spikes[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + WIDTH / 1.8
-          && spikes[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - WIDTH / 1.8
-          && spikes[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + HEIGHT / 1.8
-          && spikes[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - HEIGHT / 1.8) {
+      if (spikes[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + (WIDTH / 1.8)
+          && spikes[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - (WIDTH / 1.8)
+          && spikes[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + (HEIGHT / 1.8)
+          && spikes[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - (HEIGHT / 1.8)) {
         try {
           File img = new File("src/client/imgs/spike.png");
           BufferedImage image = ImageIO.read(img);
@@ -199,10 +199,10 @@ public class Gameplay extends JPanel implements ActionListener {
   private void drawFoods(Graphics2D g2) {
     for (int i = 0; i < foods.length; i++) {
       if (foods[i] != null) {
-        if (foods[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + WIDTH / 2
-            && foods[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - WIDTH / 2
-            && foods[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + HEIGHT / 2
-            && foods[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - HEIGHT / 2) {
+        if (foods[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + (WIDTH / 1.8)
+            && foods[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - (WIDTH / 1.8)
+            && foods[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + (HEIGHT / 1.8)
+            && foods[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - (HEIGHT / 1.8)) {
           g2.setColor(foods[i].getColor());
           g2.fill(new Ellipse2D.Double(foods[i].getPos().getPosX(), foods[i].getPos().getPosY(),
               20 * scale, 20 * scale));
@@ -215,10 +215,10 @@ public class Gameplay extends JPanel implements ActionListener {
     for (int i = 0; i < otherPlayers.length; i++) {
       if (!otherPlayers[i].getUsername().equals(clientManager.getPlayerMe().getUsername())
           && !otherPlayers[i].isDead()) {
-        if (otherPlayers[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + WIDTH / 2
-            && otherPlayers[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - WIDTH / 2
-            && otherPlayers[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + HEIGHT / 2
-            && otherPlayers[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - HEIGHT / 2) {
+        if (otherPlayers[i].getPos().getPosX() < clientManager.getPlayerMe().getPos().getPosX() + (WIDTH / 1.8)
+            && otherPlayers[i].getPos().getPosX() > clientManager.getPlayerMe().getPos().getPosX() - (WIDTH / 1.8)
+            && otherPlayers[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + (HEIGHT / 1.8)
+            && otherPlayers[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - (HEIGHT / 1.8)) {
           g2.setColor(otherPlayers[i].getColor());
           g2.fill(new Ellipse2D.Double(otherPlayers[i].getPos().getPosX(), otherPlayers[i].getPos().getPosY(),
               otherPlayers[i].getMass() * scale, otherPlayers[i].getMass() * scale));

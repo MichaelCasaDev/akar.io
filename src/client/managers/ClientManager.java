@@ -129,7 +129,7 @@ public class ClientManager {
         input = new ObjectInputStream(connection.getInputStream());
 
         System.out.println("Connected to the server!");
-        System.out.println(connection);
+        System.out.println(connection + " . " + status);
 
         output.writeObject(new ClientPacket(playerMe, status, new Date().getTime()));
 
@@ -145,6 +145,7 @@ public class ClientManager {
               for (Player p : otherPlayers) {
                 if (p.getUsername().equals(playerMe.getUsername())) {
                   playerMe.setPos(p.getPos());
+                  connected = ConnectionStates.CONNECTED;
                 }
               }
             }
@@ -154,7 +155,8 @@ public class ClientManager {
             }
 
             if (!sPacket.isCanConnect() && status == StatusEnum.CONNECT) {
-              JOptionPane.showMessageDialog(null, "Lo username specificato è già in uso, scegliene un altro!", "Errore",
+              JOptionPane.showMessageDialog(null,
+                  "Lo username specificato è già in uso, scegliene un altro!", "Errore",
                   JOptionPane.ERROR_MESSAGE);
 
               windowManager.close();
@@ -165,7 +167,6 @@ public class ClientManager {
           System.out.println("Errore ricezione dati");
           e.printStackTrace();
         }
-
       } catch (Exception ex) {
         System.out.println("Server offline!");
         System.out.println("Rety in 2 seconds...");
@@ -173,7 +174,9 @@ public class ClientManager {
       }
 
       try {
-        Thread.sleep(2000);
+        if (connected == ConnectionStates.CONNECTING) {
+          Thread.sleep(2000);
+        }
       } catch (Exception ex) {
         ex.printStackTrace();
       }

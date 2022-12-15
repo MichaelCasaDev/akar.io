@@ -119,14 +119,17 @@ public class Connection extends Thread {
               break;
             }
             case CONNECT: {
-              Main.gManager.getpManager().addPlayer(packet.getPlayer());
-
               // Send informations back to client
-              Player[] players = Main.gManager.getpManager().getPlayersAndGeneratePos(packet.getPlayer());
               Food[] foods = Main.gManager.getfManager().getFoods();
               Spike[] spikes = Main.gManager.getsManager().getSpikes();
               boolean canConnect = Main.gManager.getpManager().isUsernameAvailable(packet.getPlayer().getUsername());
               String avgPing = calculateAvgPing(packet.getTime(), new Date().getTime());
+
+              if (canConnect) {
+                Main.gManager.getpManager().addPlayer(packet.getPlayer());
+              }
+
+              Player[] players = Main.gManager.getpManager().getPlayersAndGeneratePos(packet.getPlayer());
 
               this.mePlayer = Main.gManager.getpManager().getFullPlayerMe(packet.getPlayer());
               output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
