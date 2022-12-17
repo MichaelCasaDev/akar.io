@@ -4,7 +4,7 @@ import javax.swing.*;
 
 import client.views.Gameplay;
 
-public class WindowManager extends JFrame {
+public class WindowManager {
   private JPanel jPanel;
   public static int WIDTH = 1280;
   public static int HEIGHT = 768;
@@ -19,7 +19,7 @@ public class WindowManager extends JFrame {
     pane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
     pane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-    setIconImage(new ImageIcon("src/client/imgs/logo.png").getImage());
+    frame.setIconImage(new ImageIcon("src/client/imgs/logo.png").getImage());
 
     frame.add(pane);
     frame.setSize(WIDTH, HEIGHT);

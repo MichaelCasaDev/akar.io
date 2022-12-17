@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -19,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import client.Main;
 import client.managers.ClientManager;
 import client.managers.ClientManager.WindowStates;
 import server.entities.Player;
@@ -95,8 +95,7 @@ public class Home extends JPanel implements ActionListener, KeyListener {
 
     try {
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      File img = new File("src/client/imgs/home.png");
-      BufferedImage image = ImageIO.read(img);
+      BufferedImage image = ImageIO.read(Main.class.getResource("imgs/home.png"));
 
       g2.drawImage(image, 0, 0, 1280, 768, this);
 

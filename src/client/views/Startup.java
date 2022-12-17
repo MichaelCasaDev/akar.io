@@ -22,7 +22,7 @@ public class Startup extends JPanel {
       JOptionPane.showMessageDialog(null, "Non hai inserito un indirizzo e porta validi!", "Errore",
           JOptionPane.ERROR_MESSAGE);
 
-      clientManager.getWindowManager().dispose();
+      clientManager.getWindowManager().close();
     } else {
       try {
         clientManager.setRemoteHost(p[0]);

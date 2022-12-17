@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.Date;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -17,6 +16,7 @@ import java.awt.event.ActionListener;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import client.Main;
 import client.managers.ClientManager;
 import client.managers.ClientManager.ConnectionStates;
 import client.managers.ClientManager.WindowStates;
@@ -179,8 +179,7 @@ public class Gameplay extends JPanel implements ActionListener {
           && spikes[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + (HEIGHT / 1.8)
           && spikes[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - (HEIGHT / 1.8)) {
         try {
-          File img = new File("src/client/imgs/spike.png");
-          BufferedImage image = ImageIO.read(img);
+          BufferedImage image = ImageIO.read(Main.class.getResource("imgs/spike.png"));
 
           g2.drawImage(image, spikes[i].getPos().getPosX(), spikes[i].getPos().getPosY(),
               (int) (spikes[i].getSize() * scale),
@@ -216,6 +215,12 @@ public class Gameplay extends JPanel implements ActionListener {
             && otherPlayers[i].getPos().getPosY() < clientManager.getPlayerMe().getPos().getPosY() + (HEIGHT / 1.8)
             && otherPlayers[i].getPos().getPosY() > clientManager.getPlayerMe().getPos().getPosY() - (HEIGHT / 1.8)) {
           g2.setColor(otherPlayers[i].getColor());
+          g2.drawString(otherPlayers[i].getUsername(),
+              otherPlayers[i].getPos().getPosX()
+                  - (g2.getFontMetrics().stringWidth(otherPlayers[i].getUsername()) / 2)
+                  + (otherPlayers[i].getMass() / 2),
+              otherPlayers[i].getPos().getPosY()
+                  - 16);
           g2.fill(new Ellipse2D.Double(otherPlayers[i].getPos().getPosX(), otherPlayers[i].getPos().getPosY(),
               otherPlayers[i].getMass() * scale, otherPlayers[i].getMass() * scale));
         }
@@ -277,6 +282,12 @@ public class Gameplay extends JPanel implements ActionListener {
 
   private void drawPlayerMe(Graphics2D g2) {
     g2.setColor(clientManager.getPlayerMe().getColor());
+    g2.drawString(clientManager.getPlayerMe().getUsername(),
+        clientManager.getPlayerMe().getPos().getPosX()
+            - (g2.getFontMetrics().stringWidth(clientManager.getPlayerMe().getUsername()) / 2)
+            + (clientManager.getPlayerMe().getMass() / 2),
+        clientManager.getPlayerMe().getPos().getPosY()
+            - 16);
     g2.fill(new Ellipse2D.Double(clientManager.getPlayerMe().getPos().getPosX(),
         clientManager.getPlayerMe().getPos().getPosY(), clientManager.getPlayerMe().getMass() * scale,
         clientManager.getPlayerMe().getMass() * scale));

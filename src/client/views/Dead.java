@@ -10,12 +10,12 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import client.Main;
 import client.managers.ClientManager;
 import client.managers.ClientManager.WindowStates;
 
@@ -54,8 +54,7 @@ public class Dead extends JPanel implements ActionListener {
     Graphics2D g2 = (Graphics2D) g;
 
     try {
-      File img = new File("src/client/imgs/morte.png");
-      BufferedImage image = ImageIO.read(img);
+      BufferedImage image = ImageIO.read(Main.class.getResource("imgs/morte.png"));
       g2.drawImage(image, 0, 0, 1280, 768, this);
 
       g2.setFont(new Font("Arial", Font.PLAIN, 20));
