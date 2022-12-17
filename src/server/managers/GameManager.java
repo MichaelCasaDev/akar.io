@@ -22,8 +22,8 @@ public class GameManager {
   }
 
   public void newGame() {
-    fManager.initFood(4000);
-    sManager.initSpike(20);
+    fManager.initFood(3000);
+    sManager.initSpike(60);
   }
 
   public int checkCollision(Player p) {
