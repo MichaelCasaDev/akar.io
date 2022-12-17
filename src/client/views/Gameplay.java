@@ -124,35 +124,31 @@ public class Gameplay extends JPanel implements ActionListener {
       double dy = this.dy - clientManager.getPlayerMe().getPos().getPosY()
           - (clientManager.getPlayerMe().getMass() * scale) / 2;
 
-      double dxMul = Math.abs(dx) < ((clientManager.getPlayerMe().getMass() * scale) / 2) * 5 ? 3 : 6;
-      double dyMul = Math.abs(dy) < (clientManager.getPlayerMe().getMass() / 2) * 5 ? 3 : 6;
+      double dxMul = Math.abs(dx) < (clientManager.getPlayerMe().getMass() / 2) * 5 ? 3 : 5;
+      double dyMul = Math.abs(dy) < (clientManager.getPlayerMe().getMass() / 2) * 5 ? 3 : 5;
 
       if (dx * dx + dy * dy > 10) {
         double angle = Math.atan2(dy, dx);
         int newPosY = (int) (clientManager.getPlayerMe().getPos().getPosY() + (dyMul * Math.sin(angle)));
         int newPosX = (int) (clientManager.getPlayerMe().getPos().getPosX() + (dxMul * Math.cos(angle)));
 
-        if ((clientManager.getPlayerMe().getPos().getPosX() - clientManager.getPlayerMe().getMass()) >= 9000
-            || (clientManager.getPlayerMe().getPos().getPosX() + clientManager.getPlayerMe().getMass()) <= 1000) {
-          if (newPosX < 9000 && newPosX > 1000) {
-            clientManager.getPlayerMe().getPos().setPosX(newPosX);
+        if ((clientManager.getPlayerMe().getMass() + clientManager.getPlayerMe().getPos().getPosY() <= 9000
+            && -clientManager.getPlayerMe().getMass() + clientManager.getPlayerMe().getPos().getPosY() >= 1000)
 
-            updateViewPosition();
-          }
-        } else if ((clientManager.getPlayerMe().getPos().getPosY() - clientManager.getPlayerMe().getMass()) >= 9000
-            || (clientManager.getPlayerMe().getPos().getPosY() + clientManager.getPlayerMe().getMass()) <= 1000) {
-          if (newPosY < 9000 && newPosY > 1000) {
-            clientManager.getPlayerMe().getPos().setPosY(newPosY);
-
-            updateViewPosition();
-          }
-        } else {
+            && (clientManager.getPlayerMe().getMass() + clientManager.getPlayerMe().getPos().getPosX() <= 9000
+                && -clientManager.getPlayerMe().getMass() + clientManager.getPlayerMe().getPos().getPosX() >= 1000)) {
           clientManager.getPlayerMe().getPos().setPosX(newPosX);
           clientManager.getPlayerMe().getPos().setPosY(newPosY);
 
           updateViewPosition();
-        }
+        } else {
+          if (newPosY < 9000 && newPosX < 9000 && newPosY > 1000 && newPosX > 1000) {
+            clientManager.getPlayerMe().getPos().setPosX(newPosX);
+            clientManager.getPlayerMe().getPos().setPosY(newPosY);
 
+            updateViewPosition();
+          }
+        }
       }
     }
 

@@ -8,12 +8,12 @@
 
 ---
 
-## Why
+# Why
 This project was made by me and one of my classmate as a mid-year test.
 
 All the project is made out of bare Java swing and Graphics2D, without the use of external libraries.
 
-## What we used
+# What we used
 - **TCP Sockets**: for the client-server communications (this game can handle multiple clients connected to one server). *UDP would have been a better choice for speed but the assignment required to use TCP connections and we do our best to make a playable game...*
 - **Java Swing/Graphics2D**: for the graphics, to draw shapes, text and images
 - **GIT (GitHub)**: to collaborate and keep our code shared
