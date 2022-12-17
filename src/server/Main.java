@@ -7,8 +7,8 @@ import server.net.Server;
 import server.views.BasicLog;
 
 public class Main {
-  public static GameManager gManager = new GameManager();
   private static BasicLog basicLog = new BasicLog();
+  public static GameManager gManager = new GameManager();
 
   public static void main(String[] args) {
     System.setOut(new PrintStream(System.out) {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.time.Instant;
 import java.util.Date;
 
 import server.Main;
@@ -18,10 +19,11 @@ public class Connection extends Thread {
   private ObjectOutputStream output;
   private Player mePlayer;
 
-  public Connection(Socket socket, Server server) {
+  public Connection(Socket socket, Server server, int connId) {
     try {
       this.socket = socket;
       this.server = server;
+      this.setName("#" + connId);
 
       this.output = new ObjectOutputStream(this.socket.getOutputStream());
       this.input = new ObjectInputStream(this.socket.getInputStream());
@@ -42,20 +44,26 @@ public class Connection extends Thread {
         Object o = input.readObject();
 
         if (!(o instanceof ClientPacket)) {
-          System.out.println("Invalid packet from client");
+          System.out.println("[CLIENT " + Instant.ofEpochSecond(new Date().getTime() / 1000)
+              + "] | Invalid packet from client. Rejecting it!");
         } else {
           ClientPacket packet = (ClientPacket) o;
-          System.out.println(packet.getOperation() + " - " + packet.getTime());
 
           switch (packet.getOperation()) {
             case MOVE: {
               switch (Main.gManager.checkCollision(packet.getPlayer())) {
                 case 0: { // player
+                  System.out.println(
+                      "[CLIENT " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | ("
+                          + packet.getPlayer().getUsername()
+                          + ") Player is colliding with another player!");
                   Player otherPlayer = Main.gManager.getOtherPlayerCollision(packet.getPlayer());
 
                   // check if other player is bigger or you
                   if (!(otherPlayer instanceof Player)) {
-                    System.out.println("Error other player is not a player");
+                    System.out.println(
+                        "[CLIENT " + Instant.ofEpochSecond(new Date().getTime()) + "] | ("
+                            + packet.getPlayer().getUsername() + ") Error other player is not a player!");
                     break;
                   }
 
@@ -77,10 +85,14 @@ public class Connection extends Thread {
                   break;
                 }
                 case 1: { // food
+                  System.out
+                      .println("[CLIENT " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | ("
+                          + packet.getPlayer().getUsername() + ") Player is colliding with food!");
+
                   Food otherFood = Main.gManager.getOtherFoodCollision(packet.getPlayer());
                   if (!otherFood.isEat()) {
                     Main.gManager.getfManager().eatFood(otherFood);
-                    packet.getPlayer().eatFood(4);
+                    packet.getPlayer().eatFood(2);
                   }
 
                   // Update user
@@ -89,6 +101,11 @@ public class Connection extends Thread {
                   break;
                 }
                 case 2: { // spike
+                  System.out.println(
+                      "[CLIENT " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | ("
+                          + packet.getPlayer().getUsername()
+                          + ") Player is colliding with a spike!");
+
                   if (packet.getPlayer().getMass() > 60) {
                     Main.gManager.kill(packet.getPlayer());
                   }
@@ -119,6 +136,8 @@ public class Connection extends Thread {
               break;
             }
             case CONNECT: {
+              System.out.println("[CLIENT " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | ("
+                  + packet.getPlayer().getUsername() + ") Connecting new player...");
               // Send informations back to client
               Food[] foods = Main.gManager.getfManager().getFoods();
               Spike[] spikes = Main.gManager.getsManager().getSpikes();
@@ -127,6 +146,12 @@ public class Connection extends Thread {
 
               if (canConnect) {
                 Main.gManager.getpManager().addPlayer(packet.getPlayer());
+                System.out.println("[CLIENT " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | ("
+                    + packet.getPlayer().getUsername() + ") Player connected!");
+              } else {
+                System.out.println(
+                    "[CLIENT " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | ("
+                        + packet.getPlayer().getUsername() + ") Player rejected, username already in use!");
               }
 
               Player[] players = Main.gManager.getpManager().getPlayersAndGeneratePos(packet.getPlayer());
@@ -149,7 +174,6 @@ public class Connection extends Thread {
               boolean canConnect = false;
               String avgPing = null;
 
-              this.mePlayer = packet.getPlayer();
               output.writeObject(new ServerPacket(players, foods, spikes, canConnect, avgPing));
 
               break;
@@ -161,7 +185,6 @@ public class Connection extends Thread {
         }
       }
     } catch (Exception e) {
-      System.out.println("Error from client! Disconnecting...");
       disconnect();
     }
   }
@@ -171,10 +194,14 @@ public class Connection extends Thread {
    */
   public void disconnect() {
     try {
+      System.out.println("[SERVER " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | Closing connection "
+          + this.getName() + "...");
+
       socket.close();
       this.server.removeConnection(this);
       Main.gManager.getpManager().removePlayer(this.mePlayer);
-      System.out.println("Client disconnected!");
+      System.out.println("[SERVER " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | Connection "
+          + this.getName() + " has been closed!");
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -1,8 +1,10 @@
 package server.managers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 import java.awt.Color;
+import java.time.Instant;
 
 import server.entities.Food;
 import server.utils.Pos;
@@ -15,17 +17,19 @@ public class FoodManager {
   }
 
   public void initFood(int tot) {
+    System.out.println("[GAME MAP " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | Generating foods...");
+
     for (int i = 0; i < tot; i++) {
       int posX = (int) ((Math.random() * (9000 - 1000)) + 1000);
       int posY = (int) ((Math.random() * (9000 - 1000)) + 1000);
 
       foods.add(new Food(new Pos(posX, posY), randomColor(), i));
     }
+
+    System.out.println("[GAME MAP " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | Food generated!");
   }
 
   public void eatFood(Food food) {
-    System.out.println("Food id: " + food.getId());
-
     for (int i = 0; i < foods.size(); i++) {
       if (foods.get(i).getId() == food.getId() && !food.isEat()) {
         foods.get(i).eat();

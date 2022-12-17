@@ -17,7 +17,7 @@ public class BasicLog {
   private JList<String> list;
 
   public BasicLog() {
-    JFrame frame = new JFrame("####### | SERVER | ####### Akar.IO ####### | SERVER | #######");
+    JFrame frame = new JFrame("Akar.IO | Server");
     JPanel contentPane = new JPanel();
     contentPane.setLayout(null);
     frame.setContentPane(contentPane);

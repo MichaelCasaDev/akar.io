@@ -1,5 +1,8 @@
 package server.managers;
 
+import java.time.Instant;
+import java.util.Date;
+
 import server.entities.Food;
 import server.entities.Player;
 import server.entities.Spike;
@@ -22,8 +25,11 @@ public class GameManager {
   }
 
   public void newGame() {
+    System.out
+        .println("[GAME MAP " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | Generating game map...");
     fManager.initFood(3000);
     sManager.initSpike(60);
+    System.out.println("[GAME MAP " + Instant.ofEpochSecond(new Date().getTime() / 1000) + "] | Game map generated!");
   }
 
   public int checkCollision(Player p) {
